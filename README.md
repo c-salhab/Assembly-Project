@@ -4,6 +4,6 @@
 ## Contributors
 - Charbel SALHAB
 - Teddy TRUONG
--Quang Dat Le
+- Quang Dat Le
 
 ### Welcome on "Main" branch
