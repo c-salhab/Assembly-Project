@@ -1,0 +1,532 @@
+     1                                  ;external functions from us
+     2                                  %include "biggest.asm"
+     3                              <1> extern printf
+     4                              <1> section .data
+     5 00000000 546865206269676765- <1> msg_max: db "The biggest value is: %d",10,0
+     5 00000009 73742076616C756520- <1>
+     5 00000012 69733A2025640A00    <1>
+     6                              <1> 
+     7                              <1> section .bss
+     8                              <1> 
+     9                              <1>     
+    10                              <1> section .text
+    11                              <1> global maximum
+    12                              <1> maximum:
+    13                              <1>     
+    14 00000000 4889F8              <1>     mov rax,rdi
+    15 00000003 4889C3              <1>     mov rbx,rax               
+    16 00000006 4889F1              <1>     mov rcx,rsi
+    17 00000009 4839D9              <1>     cmp rcx,rbx
+    18 0000000C 7E03                <1>     jle last_max
+    19 0000000E 4889CB              <1>     mov rbx,rcx 
+    20                              <1>     
+    21                              <1> last_max:
+    22 00000011 4889D1              <1>     mov rcx,rdx
+    23 00000014 4839D9              <1>     cmp rcx,rbx
+    24 00000017 7E03                <1>     jle biggest_value
+    25 00000019 4889CB              <1>     mov rbx,rcx
+    26                              <1>     
+    27                              <1> biggest_value:
+    28                              <1>            
+    29                              <1> 
+    30 0000001C C3                  <1> ret
+    31                              <1> 
+     3                                  %include "smallest.asm"
+     4                              <1> extern printf
+     5                              <1> section .data
+     6 0000001A 54686520736D616C6C- <1> msg_min: db "The smallest value is: %d",10,0
+     6 00000023 6573742076616C7565- <1>
+     6 0000002C 2069733A2025640A00  <1>
+     7                              <1> 
+     8                              <1> section .bss
+     9                              <1> 
+    10                              <1>     
+    11                              <1> section .text
+    12                              <1> global minimum
+    13                              <1> minimum:
+    14                              <1>     
+    15 0000001D 4889F8              <1>     mov rax,rdi
+    16 00000020 4889C3              <1>     mov rbx,rax                   
+    17 00000023 4889F1              <1>     mov rcx,rsi
+    18 00000026 4839D9              <1>     cmp rcx,rbx
+    19 00000029 7703                <1>     ja last_min
+    20 0000002B 4889CB              <1>     mov rbx,rcx 
+    21                              <1>     
+    22                              <1> last_min:
+    23 0000002E 4889D1              <1>     mov rcx,rdx
+    24 00000031 4839D9              <1>     cmp rcx,rbx
+    25 00000034 7703                <1>     ja smallest_value
+    26 00000036 4889CB              <1>     mov rbx,rcx
+    27                              <1>     
+    28                              <1> smallest_value:
+    29 00000039 C3                  <1> ret
+     4                                  %include "determinant.asm"
+     5                              <1> global vecteurs
+     6                              <1> 
+     7                              <1> section .text
+     8                              <1> vecteurs:
+     9                              <1>     
+    10 0000003A 55                  <1>     push rbp
+    11 0000003B 4889E5              <1>     mov rbp, rsp
+    12                              <1>     ;rdi : Xa
+    13                              <1>     ;rsi : Ya
+    14                              <1>     ;rdx : Xb
+    15                              <1>     ;rcx : Yb
+    16                              <1>     ;r8  : Xc || Xp
+    17                              <1>     ;r9  : Yc || Yp
+    18                              <1>     
+    19 0000003E 4829FA              <1>     sub rdx, rdi ;Xab
+    20 00000041 4829F1              <1>     sub rcx, rsi ;Yab
+    21                              <1>     
+    22 00000044 4929F8              <1>     sub r8, rdi ;Xac || Xap
+    23 00000047 4929F1              <1>     sub r9, rsi ;Yac || Yap
+    24                              <1>     
+    25                              <1>     ;push rdx 
+    26                              <1>     ;push rcx 
+    27                              <1>     ;push r8
+    28                              <1>     ;push r9
+    29                              <1>     
+    30 0000004A 4889D7              <1>     mov rdi, rdx ;Xab
+    31 0000004D 4889CE              <1>     mov rsi, rcx ;Yab
+    32 00000050 4C89C2              <1>     mov rdx, r8  ;Xac || Xap
+    33 00000053 4C89C9              <1>     mov rcx, r9  ;Yac || Yap
+    34                              <1>     
+    35 00000056 4889EC              <1>     mov rsp, rbp
+    36 00000059 5D                  <1>     pop rbp
+    37                              <1>     
+    38 0000005A E801000000          <1>     call determinant
+    39                              <1>     
+    40 0000005F C3                  <1> ret
+    41                              <1> 
+    42                              <1> global determinant
+    43                              <1> section .text    
+    44                              <1> determinant:
+    45                              <1>     
+    46 00000060 41B800000000        <1>     mov r8, 0
+    47 00000066 480FAFF9            <1>     imul rdi, rcx
+    48 0000006A 480FAFF2            <1>     imul rsi, rdx
+    49 0000006E 4829F7              <1>     sub rdi, rsi
+    50                              <1>     
+    51 00000071 E801000000          <1>     call signe
+    52 00000076 C3                  <1> ret
+    53                              <1> 
+    54                              <1> global signe
+    55                              <1> 
+    56                              <1> signe:
+    57                              <1>     
+    58 00000077 4883FF00            <1>     cmp rdi, 0
+    59 0000007B 7C07                <1>     jl indirect
+    60                              <1>     direct:
+    61 0000007D B801000000          <1>         mov rax, 1
+    62                              <1>         ;mov rdi, resultat_positif
+    63                              <1>         ;mov rax, 0
+    64                              <1>         ;call printf
+    65 00000082 EB05                <1>        jmp fin_signe
+    66                              <1>     indirect:
+    67 00000084 B800000000          <1>         mov rax, 0
+    68                              <1>         ;mov rdi, resultat_negatif
+    69                              <1>         ;mov rax, 0
+    70                              <1>         ;call printf
+    71                              <1>     fin_signe:
+    72 00000089 C3                  <1> ret
+     5                                  
+     6                                  extern maximum
+     7                                  extern minimum
+     8                                  
+     9                                  ; external functions from X11 library
+    10                                  
+    11                                  extern XOpenDisplay
+    12                                  extern XDisplayName
+    13                                  extern XCloseDisplay
+    14                                  extern XCreateSimpleWindow
+    15                                  extern XMapWindow
+    16                                  extern XRootWindow
+    17                                  extern XSelectInput
+    18                                  extern XFlush
+    19                                  extern XCreateGC
+    20                                  extern XSetForeground
+    21                                  extern XDrawLine
+    22                                  extern XDrawPoint
+    23                                  extern XFillArc
+    24                                  extern XNextEvent
+    25                                  
+    26                                  ; external functions from stdio library (ld-linux-x86-64.so.2)    
+    27                                  extern printf
+    28                                  extern exit
+    29                                  
+    30                                  %define StructureNotifyMask	131072
+    31                                  %define KeyPressMask		1
+    32                                  %define ButtonPressMask	4
+    33                                  %define MapNotify		19
+    34                                  %define KeyPress		2
+    35                                  %define ButtonPress	           4
+    36                                  %define Expose                    12
+    37                                  %define ConfigureNotify	22
+    38                                  %define CreateNotify             16
+    39                                  
+    40                                  %define NB_TRIANGLES 6
+    41                                  %define TAILLE_FENETRE 500
+    42                                  %define QWORD	8
+    43                                  %define DWORD	4
+    44                                  %define WORD	2
+    45                                  %define BYTE	1
+    46                                  
+    47                                  global generate_random_number
+    48                                  generate_random_number:
+    49 0000008A 66410FC7F7                  rdrand r15w
+    50 0000008F 664489F8                    mov ax, r15w
+    51 00000093 66BBF401                    mov bx,TAILLE_FENETRE
+    52 00000097 6631D2                      xor dx, dx
+    53 0000009A 66F7F3                      div bx 
+    54 0000009D C3                      ret
+    55                                  
+    56                                  global generate_triangle_coordinates
+    57                                  generate_triangle_coordinates:
+    58 0000009E E8E7FFFFFF                      call generate_random_number
+    59 000000A3 66891425[09010000]              mov [A], dx
+    60 000000AB E8DAFFFFFF                      call generate_random_number
+    61 000000B0 66891425[11010000]              mov [A+QWORD], dx
+    62                                          
+    63 000000B8 E8CDFFFFFF                      call generate_random_number
+    64 000000BD 66891425[19010000]              mov [B], dx
+    65 000000C5 E8C0FFFFFF                      call generate_random_number
+    66 000000CA 66891425[21010000]              mov [B+QWORD], dx
+    67                                          
+    68 000000D2 E8B3FFFFFF                      call generate_random_number
+    69 000000D7 66891425[29010000]              mov [C], dx
+    70 000000DF E8A6FFFFFF                      call generate_random_number
+    71 000000E4 66891425[31010000]              mov [C+QWORD], dx
+    72 000000EC C3                      ret
+    73                                  
+    74                                  global initialize_color_jump
+    75                                  initialize_color_jump:
+    76                                      
+    77 000000ED 8B0425[49010000]            mov eax, [based_color]
+    78 000000F4 BB06000000                  mov ebx, NB_TRIANGLES
+    79 000000F9 31D2                        xor edx, edx
+    80 000000FB F7F3                        div ebx
+    81 000000FD 83EB01                      sub ebx, 1  
+    82 00000100 C3                      ret
+    83                                  
+    84                                  global change_color
+    85                                  change_color:
+    86                                      
+    87 00000101 E8E7FFFFFF                  call initialize_color_jump
+    88 00000106 010425[4D010000]            add dword[actual_color], eax
+    89 0000010D 488B3C25[00000000]          mov rdi,qword[display_name]
+    90 00000115 488B3425[24000000]          mov rsi,qword[gc]
+    91 0000011D 8B1425[4D010000]            mov edx,[actual_color]
+    92 00000124 E8(00000000)                call XSetForeground
+    93 00000129 C3                      ret   
+    94                                  
+    95                                  global main
+    96                                  
+    97                                  section .bss
+    98 00000000 ????????????????        display_name:	resq	1
+    99 00000008 ????????                screen:	         resd	1
+   100 0000000C ????????                depth:         	resd	1
+   101 00000010 ????????                connection:    	resd	1
+   102 00000014 ????????                width:         	resd	1
+   103 00000018 ????????                height:        	resd	1
+   104 0000001C ????????????????        window:		resq	1
+   105 00000024 ????????????????        gc:		resq	1
+   106                                  
+   107 0000002C ????????????????        xmax: resq 1
+   108 00000034 ????????????????        ymax: resq 1
+   109 0000003C ????????????????        xmin: resq 1
+   110 00000044 ????????????????        ymin: resq 1
+   111                                  
+   112 0000004C ????????????????        xcurrent: resq 1
+   113 00000054 ????????????????        ycurrent: resq 1
+   114                                  
+   115 0000005C <res 18h>               det_points: resq 3
+   116                                   
+   117                                  section .data
+   118                                  
+   119 00000035 526573756C74617420-     resultat: db "Resultat : (%d,%d)", 10 ,0
+   119 0000003E 3A202825642C256429-
+   119 00000047 0A00               
+   120                                  
+   121 00000049 0000000000000000-       event:      times	24 dq 0
+   121 00000049 <rep 18h>          
+   122                                  
+   123                                  ;######POINTS######
+   124 00000109 000000000000000000-     A: dq 0,0
+   124 00000112 00000000000000     
+   125 00000119 000000000000000000-     B: dq 0,0
+   125 00000122 00000000000000     
+   126 00000129 000000000000000000-     C: dq 0,0
+   126 00000132 00000000000000     
+   127 00000139 000000000000000000-     P: dq 0,0 
+   127 00000142 00000000000000     
+   128                                  ;##################
+   129                                  
+   130 00000149 0000FF00                based_color: dd 0xFF0000
+   131 0000014D 0000FF00                actual_color: dd 0xFF0000
+   132                                  
+   133 00000151 00                      i: db 0   
+   134 00000152 00                      j: db 0   
+   135                                  section .text
+   136                                  	
+   137                                  ;##################################################
+   138                                  ;########### PROGRAMME PRINCIPAL ##################
+   139                                  ;##################################################
+   140                                  
+   141                                  main:
+   142                                  
+   143 0000012A 55                      push rbp
+   144                                  
+   145 0000012B 4831FF                  xor     rdi,rdi
+   146 0000012E E8(00000000)            call    XOpenDisplay	; Création de display
+   147 00000133 48890425[00000000]      mov     qword[display_name],rax	; rax=nom du display
+   148                                  
+   149                                  ; display_name structure
+   150                                  ; screen = DefaultScreen(display_name);
+   151 0000013B 488B0425[00000000]      mov     rax,qword[display_name]
+   152 00000143 8B80E0000000            mov     eax,dword[rax+0xe0]
+   153 00000149 890425[08000000]        mov     dword[screen],eax
+   154                                  
+   155 00000150 488B3C25[00000000]      mov rdi,qword[display_name]
+   156 00000158 8B3425[08000000]        mov esi,dword[screen]
+   157 0000015F E8(00000000)            call XRootWindow
+   158 00000164 4889C3                  mov rbx,rax
+   159                                  
+   160 00000167 488B3C25[00000000]      mov rdi,qword[display_name]
+   161 0000016F 4889DE                  mov rsi,rbx
+   162 00000172 BA0A000000              mov rdx,10
+   163 00000177 B90A000000              mov rcx,10
+   164 0000017C 41B8F4010000            mov r8,TAILLE_FENETRE	; largeur
+   165 00000182 41B9F4010000            mov r9,TAILLE_FENETRE	; hauteur
+   166 00000188 68FFFFFF00              push 0xFFFFFF	; background  0xRRGGBB
+   167 0000018D 6800FF0000              push 0x00FF00
+   168 00000192 6A01                    push 1
+   169 00000194 E8(00000000)            call XCreateSimpleWindow
+   170 00000199 48890425[1C000000]      mov qword[window],rax
+   171                                  
+   172 000001A1 488B3C25[00000000]      mov rdi,qword[display_name]
+   173 000001A9 488B3425[1C000000]      mov rsi,qword[window]
+   174 000001B1 BA05000200              mov rdx,131077 ;131072
+   175 000001B6 E8(00000000)            call XSelectInput
+   176                                  
+   177 000001BB 488B3C25[00000000]      mov rdi,qword[display_name]
+   178 000001C3 488B3425[1C000000]      mov rsi,qword[window]
+   179 000001CB E8(00000000)            call XMapWindow
+   180                                  
+   181 000001D0 488B3425[1C000000]      mov rsi,qword[window]
+   182 000001D8 BA00000000              mov rdx,0
+   183 000001DD B900000000              mov rcx,0
+   184 000001E2 E8(00000000)            call XCreateGC
+   185 000001E7 48890425[24000000]      mov qword[gc],rax
+   186                                  
+   187                                  boucle: ; boucle de gestion des évènements
+   188 000001EF 488B3C25[00000000]      mov rdi,qword[display_name]
+   189 000001F7 48BE-                   mov rsi,event
+   189 000001F9 [4900000000000000] 
+   190 00000201 E8(00000000)            call XNextEvent
+   191                                  
+   192 00000206 833C25[49000000]16      cmp dword[event],ConfigureNotify	; à l'apparition de la fenêtre
+   193 0000020E 7400                    je dessin							; on saute au label 'dessin'
+   194                                  
+   195                                  ;#########################################
+   196                                  ;#		DEBUT DE LA ZONE DE DESSIN		 #
+   197                                  ;#########################################
+   198                                  dessin:
+   199                                      
+   200 00000210 C60425[51010000]06          mov byte[i], NB_TRIANGLES
+   201                                      loop_triangle:
+   202                                      
+   203 00000218 E881FEFFFF                  call generate_triangle_coordinates
+   204                                      
+   205 0000021D 488B3C25[00000000]          mov rdi,qword[display_name]
+   206 00000225 488B3425[24000000]          mov rsi,qword[gc]
+   207 0000022D BA00000000                  mov edx,0x000000
+   208 00000232 E8(00000000)                call XSetForeground
+   209                                      
+   210 00000237 488B3C25[00000000]          mov rdi,qword[display_name]
+   211 0000023F 488B3425[1C000000]          mov rsi,qword[window]
+   212 00000247 488B1425[24000000]          mov rdx,qword[gc]
+   213 0000024F 488B0C25[09010000]          mov rcx,qword[A]	; coordonnée source en x
+   214 00000257 4C8B0425[11010000]          mov r8,qword[A+QWORD]	; coordonnée source en y
+   215 0000025F 4C8B0C25[19010000]          mov r9,qword[B]	; coordonnée destination en x
+   216 00000267 FF3425[21010000]            push qword[B+QWORD]		; coordonnée destination en y
+   217 0000026E E8(00000000)                call XDrawLine
+   218                                      
+   219 00000273 488B3C25[00000000]          mov rdi,qword[display_name]
+   220 0000027B 488B3425[1C000000]          mov rsi,qword[window]
+   221 00000283 488B1425[24000000]          mov rdx,qword[gc]
+   222 0000028B 488B0C25[19010000]          mov rcx,qword[B]	; coordonnée source en x
+   223 00000293 4C8B0425[21010000]          mov r8,qword[B+QWORD]	; coordonnée source en y
+   224 0000029B 4C8B0C25[29010000]          mov r9,qword[C]	; coordonnée destination en x
+   225 000002A3 FF3425[31010000]            push qword[C+QWORD]		; coordonnée destination en y
+   226 000002AA E8(00000000)                call XDrawLine
+   227                                      
+   228 000002AF 488B3C25[00000000]          mov rdi,qword[display_name]
+   229 000002B7 488B3425[1C000000]          mov rsi,qword[window]
+   230 000002BF 488B1425[24000000]          mov rdx,qword[gc]
+   231 000002C7 488B0C25[29010000]          mov rcx,qword[C]	; coordonnée source en x
+   232 000002CF 4C8B0425[31010000]          mov r8,qword[C+QWORD]	; coordonnée source en y
+   233 000002D7 4C8B0C25[09010000]          mov r9,qword[A]	; coordonnée destination en x
+   234 000002DF FF3425[11010000]            push qword[A+QWORD]		; coordonnée destination en y
+   235 000002E6 E8(00000000)                call XDrawLine
+   236                                      
+   237                                   ;########################################
+   238                                   ;##############RECTANGLES################
+   239                                   ;########################################   
+   240                                    
+   241 000002EB 488B3C25[09010000]          mov rdi, qword[A]
+   242 000002F3 488B3425[19010000]          mov rsi, qword[B]
+   243 000002FB 488B1425[29010000]          mov rdx, qword[C]  
+   244 00000303 E8F8FCFFFF                  call maximum
+   245 00000308 48891C25[2C000000]          mov qword[xmax], rbx
+   246                                      
+   247 00000310 488B3C25[09010000]          mov rdi, qword[A]
+   248 00000318 488B3425[19010000]          mov rsi, qword[B]
+   249 00000320 488B1425[29010000]          mov rdx, qword[C]  
+   250 00000328 E8F0FCFFFF                  call minimum
+   251 0000032D 48891C25[3C000000]          mov qword[xmin], rbx
+   252                                      
+   253 00000335 488B3C25[11010000]          mov rdi, qword[A+QWORD]
+   254 0000033D 488B3425[21010000]          mov rsi, qword[B+QWORD]
+   255 00000345 488B1425[31010000]          mov rdx, qword[C+QWORD]  
+   256 0000034D E8AEFCFFFF                  call maximum
+   257 00000352 48891C25[34000000]          mov qword[ymax], rbx
+   258                                      
+   259 0000035A 488B3C25[11010000]          mov rdi, qword[A+QWORD]
+   260 00000362 488B3425[21010000]          mov rsi, qword[B+QWORD]
+   261 0000036A 488B1425[31010000]          mov rdx, qword[C+QWORD]  
+   262 00000372 E8A6FCFFFF                  call minimum
+   263 00000377 48891C25[44000000]          mov qword[ymin], rbx
+   264                                      
+   265 0000037F 488B0425[3C000000]          mov rax, qword[xmin]
+   266 00000387 488B1C25[44000000]          mov rbx, qword[ymin]
+   267                                      
+   268 0000038F 48890425[4C000000]          mov qword[xcurrent], rax
+   269 00000397 48891C25[54000000]          mov qword[ycurrent], rbx
+   270                                      
+   271 0000039F E85DFDFFFF                  call change_color
+   272                                     
+   273                                      outerLoop:
+   274                                      
+   275 000003A4 488B0C25[4C000000]              mov rcx, qword[xcurrent]
+   276 000003AC 483B0C25[2C000000]              cmp  rcx, qword[xmax]
+   277 000003B4 0F8782010000                    ja done
+   278                                              
+   279 000003BA 488B1C25[44000000]              mov rbx, qword[ymin]
+   280 000003C2 48891C25[54000000]              mov qword[ycurrent], rbx
+   281                                          
+   282                                      innerLoop:
+   283                                              
+   284                                          ;DETERMINANT AB AP
+   285 000003CA 488B3C25[09010000]              mov rdi, qword[A]
+   286 000003D2 488B3425[11010000]              mov rsi, qword[A+QWORD] 
+   287 000003DA 488B1425[19010000]              mov rdx, qword[B]
+   288 000003E2 488B0C25[21010000]              mov rcx, qword[B+QWORD] 
+   289 000003EA 4C8B0425[4C000000]              mov r8, qword[xcurrent]
+   290 000003F2 4C8B0C25[54000000]              mov r9, qword[ycurrent] 
+   291                                          
+   292 000003FA E83BFCFFFF                      call vecteurs
+   293                                          
+   294 000003FF 50                              push rax ; On sauvegarde le déterminant
+   295                                          
+   296                                          ;DETERMINANT BC BP
+   297 00000400 488B3C25[19010000]              mov rdi, qword[B]
+   298 00000408 488B3425[21010000]              mov rsi, qword[B+QWORD] 
+   299 00000410 488B1425[29010000]              mov rdx, qword[C]
+   300 00000418 488B0C25[31010000]              mov rcx, qword[C+QWORD] 
+   301 00000420 4C8B0425[4C000000]              mov r8, qword[xcurrent]
+   302 00000428 4C8B0C25[54000000]              mov r9, qword[ycurrent] 
+   303                                      
+   304 00000430 E805FCFFFF                      call vecteurs
+   305                                          
+   306 00000435 50                              push rax ; On sauvegarde le déterminant
+   307                                            
+   308                                          ;DETERMINANT CA CP
+   309 00000436 488B3C25[29010000]              mov rdi, qword[C]
+   310 0000043E 488B3425[31010000]              mov rsi, qword[C+QWORD] 
+   311 00000446 488B1425[09010000]              mov rdx, qword[A]
+   312 0000044E 488B0C25[11010000]              mov rcx, qword[A+QWORD] 
+   313 00000456 4C8B0425[4C000000]              mov r8, qword[xcurrent]
+   314 0000045E 4C8B0C25[54000000]              mov r9, qword[ycurrent] 
+   315                                      
+   316 00000466 E8CFFBFFFF                      call vecteurs
+   317                                          
+   318 0000046B 50                              push rax ; On sauvegarde le déterminant
+   319                                          
+   320                                          ;TRIANGLE DETERMINANT
+   321 0000046C 488B3C25[09010000]              mov rdi, qword[A]
+   322 00000474 488B3425[11010000]              mov rsi, qword[A+QWORD] 
+   323 0000047C 488B1425[19010000]              mov rdx, qword[B]
+   324 00000484 488B0C25[21010000]              mov rcx, qword[B+QWORD] 
+   325 0000048C 4C8B0425[29010000]              mov r8, qword[C]
+   326 00000494 4C8B0C25[31010000]              mov r9, qword[C+QWORD] 
+   327                                          
+   328 0000049C E899FBFFFF                      call vecteurs
+   329                                          
+   330 000004A1 48890425[5C000000]              mov [det_points], rax
+   331 000004A9 58                              pop rax
+   332 000004AA 48890425[64000000]              mov [det_points + 1 * QWORD], rax
+   333 000004B2 58                              pop rax
+   334 000004B3 48890425[6C000000]              mov [det_points + 2 * QWORD], rax    
+   335 000004BB 58                              pop rax
+   336                                          
+   337 000004BC C60425[52010000]00              mov byte[j], 0
+   338                                      
+   339                                          verification:
+   340 000004C4 0FB60C25[52010000]                  movzx ecx, byte[j]
+   341                                              
+   342 000004CC 67483B04CD-                         cmp rax, [det_points + ecx * QWORD]
+   342 000004D1 [5C000000]         
+   343 000004D5 753D                                jne fin_coloriage
+   344 000004D7 FE0425[52010000]                    inc byte[j]
+   345 000004DE 803C25[52010000]03                  cmp byte[j], 3
+   346 000004E6 72DC                                jb verification
+   347                                                          
+   348 000004E8 488B3C25[00000000]                  mov rdi,qword[display_name]
+   349 000004F0 488B3425[1C000000]                  mov rsi,qword[window]
+   350 000004F8 488B1425[24000000]                  mov rdx,qword[gc]
+   351 00000500 8B0C25[4C000000]                    mov ecx,dword[xcurrent] ; coordonnée source en x
+   352 00000507 448B0425[54000000]                  mov r8d,dword[ycurrent] ; coordonnée source en y
+   353 0000050F E8(00000000)                        call XDrawPoint
+   354                                              
+   355                                          fin_coloriage:  
+   356                                          
+   357                                        ;##########################
+   358 00000514 8B1C25[54000000]                mov ebx, dword[ycurrent]
+   359 0000051B 3B1C25[34000000]                cmp ebx, dword[ymax]
+   360 00000522 740C                            je innerLoopDone
+   361 00000524 FF0425[54000000]                inc dword[ycurrent] 
+   362 0000052B E99AFEFFFF                      jmp innerLoop
+   363                                        ;##########################
+   364                                      innerLoopDone:
+   365 00000530 FF0425[4C000000]                inc dword[xcurrent]
+   366 00000537 E968FEFFFF                      jmp outerLoop
+   367                                      done:
+   368                                     
+   369 0000053C FE0C25[51010000]            dec byte[i]
+   370 00000543 803C25[51010000]00          cmp byte[i], 0
+   371 0000054B 0F87C7FCFFFF                ja loop_triangle       
+   372                                  ; ############################
+   373                                  ; # FIN DE LA ZONE DE DESSIN #
+   374                                  ; ############################
+   375                                  
+   376 00000551 EB00                    jmp flush
+   377                                  
+   378                                  flush:
+   379 00000553 488B3C25[00000000]      mov rdi,qword[display_name]
+   380 0000055B E8(00000000)            call XFlush
+   381                                  ;jmp boucle
+   382 00000560 B822000000              mov rax,34
+   383 00000565 0F05                    syscall
+   384                                  
+   385                                  closeDisplay:
+   386 00000567 488B0425[00000000]          mov     rax,qword[display_name]
+   387 0000056F 4889C7                      mov     rdi,rax
+   388 00000572 E8(00000000)                call    XCloseDisplay
+   389 00000577 4831FF                      xor	    rdi,rdi
+   390 0000057A E8(00000000)                call    exit
+   391                                  	
+   392 0000057F 5D                          pop rbp
+   393 00000580 B83C000000                  mov rax, 60
+   394 00000585 BF00000000                  mov rdi, 0
+   395 0000058A 0F05                        syscall
+   396 0000058C C3                      ret
